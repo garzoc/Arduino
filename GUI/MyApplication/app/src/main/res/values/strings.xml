@@ -1,7 +1,0 @@
-<resources>
-    <string name="menu_name">menu</string>
-    <string name="app_name">MARS</string>
-    <string name="action_map">Joystick</string>
-    <string name="action_jo">Map</string>
-    <string name="action_vi">Video stream</string>
-</resources>
