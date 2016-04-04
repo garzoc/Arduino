@@ -1,12 +1,16 @@
 //#include <SoftwareSerial.h>
 #include <Smartcar.h>
+#include <Servo.h>
 
 Car car;
+SR04 UltraSonic;
+Servo sensServo;
 
-//int bluetoothTx = 0; //15
-//int bluetoothRx = 1; //14
+const int TRIGGER_PIN = 6;
+const int ECHO_PIN = A5;
 
-//SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);
+int servoPosition = 90;
+
 
 void setup()
 {
@@ -23,10 +27,17 @@ void setup()
   delay(100);
   Serial3.println("U,9600,N");
   Serial3.begin(9600);
+
+  UltraSonic.attach(TRIGGER_PIN, ECHO_PIN);
+
+  sensServo.attach(8);
+  sensServo.write(servoPosition);
 }
 
 void loop() {
   controller();
+  //Serial.println(UltraSonic.getDistance());
+  checkDistance();
 }
 
 //This is the controller that handels the input
@@ -55,6 +66,14 @@ void controller() {
         car.setAngle(0);
         break;
     }
+  }
+}
+
+void checkDistance(){
+  if(UltraSonic.getDistance()<= 15){
+    Serial3.write(1);
+    Serial.println(UltraSonic.getDistance());
+    delay(100);
   }
 }
 
