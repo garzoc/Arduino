@@ -71,6 +71,7 @@ void controller() {
 
 void checkDistance(){
   if(UltraSonic.getDistance()<= 15){
+    car.stop();
     Serial3.write(1);
     Serial.println(UltraSonic.getDistance());
     delay(100);
