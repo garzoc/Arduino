@@ -33,7 +33,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@android:drawable/ic_dialog_email"
-        android:background="#d07676"
+        android:background="#000000"
         android:baselineAlignBottom="true"
         android:clickable="true"
         android:baseline="@dimen/abc_action_bar_content_inset_material"
