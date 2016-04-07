@@ -12,6 +12,8 @@ import com.zerokol.views.JoystickView;
 import com.zerokol.views.JoystickView;
 import com.zerokol.views.JoystickView.OnJoystickMoveListener;
 
+import java.io.IOException;
+
 /**
  * @author Emanuel Mellblom
  * This class handels the joystick control option
@@ -23,7 +25,7 @@ public class JoystickControl extends AppCompatActivity {
     private JoystickView joystick;
     private TextView angleTextView;
     private TextView powerTextView;
-    private TextView directionTextView;
+    //private TextView directionTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,7 @@ public class JoystickControl extends AppCompatActivity {
 
         angleTextView = (TextView) findViewById(R.id.angleTextView);
         powerTextView = (TextView) findViewById(R.id.powerTextView);
-        directionTextView = (TextView) findViewById(R.id.directionTextView);
+        //directionTextView = (TextView) findViewById(R.id.directionTextView);
         //Referencing also other views
         joystick = (JoystickView) findViewById(R.id.joystickView);
 
@@ -50,6 +52,22 @@ public class JoystickControl extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 angleTextView.setText(" " + String.valueOf(angle) + "°");
                 powerTextView.setText(" " + String.valueOf(power) + "%");
+
+                //New test to send to Arduino
+                String theangle = "a" + "\n" + String.valueOf(angle);
+                String thePower = "p" + "\n" + String.valueOf(power);
+                try {
+                    BtConnection.btOutputStream.write(theangle.getBytes());
+                    BtConnection.btOutputStream.write(thePower.getBytes());
+                } catch (IOException io) {
+                    AlertBoxes.bluetoothAlert(JoystickControl.this);
+                } catch (IllegalStateException il) {
+                    AlertBoxes.bluetoothAlert(JoystickControl.this);
+                } catch (NullPointerException nu) {
+                    AlertBoxes.bluetoothAlert(JoystickControl.this);
+                }
+                //test send to arduino over
+
             }
         }, JoystickView.DEFAULT_LOOP_INTERVAL);
 
