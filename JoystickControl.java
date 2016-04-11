@@ -19,19 +19,18 @@ import java.io.IOException;
  * This class handels the joystick control option
  */
 
-
 public class JoystickControl extends AppCompatActivity {
 
     private JoystickView joystick;
     private TextView angleTextView;
     private TextView powerTextView;
     //private TextView directionTextView;
+    boolean  dialogShownFlag = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        //requestWindowFeature(Window.FEATURE_ACTION_BAR);
+
         super.onCreate(savedInstanceState);
-        //getSupportActionBar().hide();
 
         setContentView(R.layout.activity_joystick);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -56,21 +55,33 @@ public class JoystickControl extends AppCompatActivity {
                 //New test to send to Arduino
                 String theangle = "a" + "\n" + String.valueOf(angle);
                 String thePower = "p" + "\n" + String.valueOf(power);
-                try {
-                    BtConnection.btOutputStream.write(theangle.getBytes());
-                    BtConnection.btOutputStream.write(thePower.getBytes());
-                } catch (IOException io) {
-                    AlertBoxes.bluetoothAlert(JoystickControl.this);
-                } catch (IllegalStateException il) {
-                    AlertBoxes.bluetoothAlert(JoystickControl.this);
-                } catch (NullPointerException nu) {
-                    AlertBoxes.bluetoothAlert(JoystickControl.this);
-                }
-                //test send to arduino over
-
+                    try {
+                        BtConnection.btOutputStream.write(theangle.getBytes());
+                        BtConnection.btOutputStream.write(thePower.getBytes());
+                    } catch (IOException io) {
+                        if(dialogShownFlag){
+                            return;
+                        }else{
+                            dialogShownFlag = true;
+                            AlertBoxes.bluetoothAlert(JoystickControl.this);
+                        }
+                    } catch (IllegalStateException il) {
+                        if(dialogShownFlag){
+                            return;
+                        }else{
+                            dialogShownFlag = true;
+                            AlertBoxes.bluetoothAlert(JoystickControl.this);
+                        }
+                    } catch (NullPointerException nu) {
+                        if(dialogShownFlag){
+                            return;
+                        }else{
+                            dialogShownFlag = true;
+                            AlertBoxes.bluetoothAlert(JoystickControl.this);
+                        }
+                    }
             }
         }, JoystickView.DEFAULT_LOOP_INTERVAL);
-
     }
 
 
