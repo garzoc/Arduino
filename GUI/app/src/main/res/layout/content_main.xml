@@ -16,6 +16,8 @@
     tools:showIn="@layout/activity_main"
     android:background="#959292">
 
+
+
     <Button
         android:id="@+id/forward"
         android:text="forward"
@@ -25,9 +27,17 @@
         android:layout_above="@+id/right"
         android:layout_toEndOf="@+id/left"
         android:layout_toRightOf="@+id/left"
-        android:textColor="#c40e0e"
-        android:background="@color/colorBlack"
-        android:textStyle="bold"/>
+        android:textColor="#FFFFFF"
+        android:background="@drawable/buttonshape"
+        android:textStyle="bold"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="20"
+        android:shadowDy="-9"
+        android:shadowRadius="13"/>
+
+
+
+
 
 
     <Button
@@ -40,9 +50,15 @@
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/forward"
         android:layout_alignLeft="@+id/forward"
-        android:background="@color/colorBlack"
-        android:textColor="#c40e0e"
-        android:textStyle="bold"/>
+        android:background="@drawable/buttonshape"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="20"
+        android:shadowDy="-9"
+        android:shadowRadius="13"
+        />
+
 
     <Button
         android:id="@+id/right"
@@ -52,9 +68,13 @@
         android:layout_above="@+id/back"
         android:layout_toEndOf="@+id/back"
         android:layout_toRightOf="@+id/back"
-        android:background="@color/colorBlack"
-        android:textColor="#c40e0e"
-        android:textStyle="bold"/>
+        android:background="@drawable/buttonshape"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="20"
+        android:shadowDy="-9"
+        android:shadowRadius="13"/>
 
     <Button
         android:id="@+id/left"
@@ -66,9 +86,13 @@
         android:layout_above="@+id/back"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:background="@color/colorBlack"
-        android:textColor="#c40e0e"
-        android:textStyle="bold"/>
+        android:background="@drawable/buttonshape"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="20"
+        android:shadowDy="-9"
+        android:shadowRadius="13"/>
 
 
     <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
