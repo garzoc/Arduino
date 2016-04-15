@@ -5,5 +5,9 @@
     <string name="action_jo">Map</string>
     <string name="action_vi">Video stream</string>
     <string name="Buttonmode">Button mode</string>
+    <string name="forward">FORWARD</string>
+    <string name="back">BACK</string>
+    <string name="left">LEFT</string>
+    <string name="right">RIGHT</string>
 
 </resources>
