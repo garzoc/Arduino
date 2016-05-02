@@ -24,23 +24,16 @@ import java.util.UUID;
  */
 
 public class BtConnection extends MainActivity{
-
     private final int REQUEST_ENABLE_BT = 12;
     public static BluetoothAdapter adapter;
     static BluetoothDevice arduinoDevice;
     public static BluetoothSocket btSocket;
     static OutputStream btOutputStream;
     public static TextView out;
-
-    //New InputStream
     static InputStream btInputStream;
-
-
-
     private static boolean state = false;
 
     public static boolean blueTooth() {
-
         BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
         if (!bluetooth.isEnabled()) {
             System.out.println("Bluetooth is Disable...");
@@ -57,23 +50,18 @@ public class BtConnection extends MainActivity{
     public static void setBluetoothData() {
         // Getting the Bluetooth adapter and print out its name and adress
         adapter = BluetoothAdapter.getDefaultAdapter();
-
-        // Check for Bluetooth support
-        // Emulator doesn't support Bluetooth and will return null
         if (adapter == null) {
-           // AlertBoxes.turnOnBluetooth();
+            //AlertBoxes.turnOnBluetooth(this);
         }
         if (!adapter.isEnabled()) {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             //AlertBoxes.turnOnBluetooth();
-
         }
         Set<BluetoothDevice> devices = adapter.getBondedDevices();
-         Set pairedDevices = adapter.getBondedDevices();
+         //Set pairedDevices = adapter.getBondedDevices();
         if (devices.size() > 0) {
             for (BluetoothDevice device : devices) {
                 if (device.getName().equals("Group 13")) {
-                    //Device name = Group 13
                     arduinoDevice = device;
                     break;
                 }
@@ -81,29 +69,20 @@ public class BtConnection extends MainActivity{
         }
         try {
             System.out.println("getting here step 1");
-            UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); //Standard SerialPortService ID
-            System.out.println("getting here step 2");
+            UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); //Standard=00001101-0000-1000-8000-00805f9b34fb
             btSocket = arduinoDevice.createRfcommSocketToServiceRecord(uuid);
-            System.out.println("getting here step 3");
+            System.out.println("Connected to bt");
             btSocket.connect();
-            System.out.println("getting here step 4");
             btOutputStream = btSocket.getOutputStream();
-            System.out.println("getting here step 5");
-
-            //New InputStream
             btInputStream = btSocket.getInputStream();
-
-        } catch (SocketException so) {
+        }catch (SocketException so) {
             System.out.println("Socket failure");
-            /**
-             * This launches an alert box if bluetooth is disconnected.
-             */
             System.out.println("socket connection faild");
-        } catch (IOException io) {
+        }catch (IOException io) {
             System.out.println("This is an error");
         }
     }
-    }
+}
 
 
 
