@@ -1,8 +1,10 @@
 package com.example.system.myapplication;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.WindowManager;
 
 /**
  * @author Emanuel Mellblom
@@ -11,8 +13,9 @@ import android.content.DialogInterface;
 public class AlertBoxes extends MainActivity{
 
     //Display an error message if the bluetooth is disconnected
-    public static void bluetoothAlert(Context context) {
-        new AlertDialog.Builder(context)
+    public static void bluetoothAlert(Activity activity) {
+        //activity.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        new AlertDialog.Builder(activity)
                 .setTitle("Bluetooth disconnected")
                 .setMessage("Do you want to connect?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -31,8 +34,8 @@ public class AlertBoxes extends MainActivity{
     }
 
     //Display error message if bluetooth is not activated on the device
-    public static void turnOnBluetooth(Context context){
-        AlertDialog turnOnBluetooth = new AlertDialog.Builder(context).create();
+    public static void turnOnBluetooth(Activity activity){
+        AlertDialog turnOnBluetooth = new AlertDialog.Builder(activity).create();
         turnOnBluetooth.setTitle("No Bluetooth");
         turnOnBluetooth.setMessage("Make sure that you have bluetooth running on your device.");
         turnOnBluetooth.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
