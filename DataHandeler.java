@@ -32,11 +32,10 @@ public class DataHandeler extends AppCompatActivity {
     static BooleanC test = new BooleanC(false);
     char[] endSequence={'9', '6', '0', '3', '1', '7', '2', '3', '1', '4'};
     int endSequenceIndex=0;
-    char[] soi = {255, 216};
+    char[] soi = {255, 217};
     int soiIndexValue = 0;
     ImageView raspImg;
     public static int packetSize = 2048;
-
 
     public DataHandeler(int size, ImageView image){
         this.size = size;
@@ -49,7 +48,6 @@ public class DataHandeler extends AppCompatActivity {
     }
 
     public boolean push(byte[] data){
-        //System.out.println("index storage " + storageIndex);
         if((storageIndex+1)%size != collectorIndex){
             this.inData[storageIndex] = data;
             storageIndex++;
@@ -60,8 +58,6 @@ public class DataHandeler extends AppCompatActivity {
     }
 
     public byte[] poll(){
-        //System.out.println("index collector "+collectorIndex);
-
         if(storageIndex!=collectorIndex){
             byte[] temp = inData[collectorIndex];
             this.collectorIndex++;
@@ -96,7 +92,7 @@ public class DataHandeler extends AppCompatActivity {
     }
 
     public boolean parseSOI(byte in){
-        if(in==this.soi[this.soiIndexValue]){
+        if((in&0xff)==(this.soi[this.soiIndexValue]&0xff)){
             boolean soiFound=soiIndexValue==1?toBoolean((soiIndexValue=-1)+2):false;
             this.soiIndexValue++;
             return soiFound;
@@ -122,23 +118,21 @@ public class DataHandeler extends AppCompatActivity {
                         for(int i = 0; i<packetSize; i++){
                             int tempInt=temp[i];
                             //if(tempInt!=0){
-                            if(parseSOI(temp[i])){
-                                System.out.println("Found beginning of image");
-                            }
+                           /* if(parseSOI(temp[i])){
+                                System.out.println("Found beginning of image " + count);
+                            }*/
+                            count++;
                             if(!parseSequence(temp[i])) {
                                 bytelist.add((byte) tempInt);
-                                count++;
                             }else{
-                                //System.out.println("Endsequence = 0");
                                 int size = bytelist.size();
-
                                 //Remove the last bytes
                                 if(size>=7){
                                     for (int j = (size - 1); j > size - 10; j--){
                                         bytelist.remove(j);
                                     }
-                                    //displayImages(bytelist);
-                                    bytelist.clear();
+                                    displayImages(bytelist);
+                                    //bytelist.clear();
                                 }
                                 endSequenceIndex =0;
                                 break;
@@ -146,7 +140,6 @@ public class DataHandeler extends AppCompatActivity {
                         }
                         if(peek()==null) {
                             try {
-                                //System.out.println("peek");
                                 Thread.sleep(500);
                             }catch (InterruptedException ie){
                                 System.out.println(ie);
@@ -157,15 +150,6 @@ public class DataHandeler extends AppCompatActivity {
                         }
                     }
                     decoderBusy = false;
-                    /*int size = bytelist.size();
-
-                    //Remove the last bytes
-                    if(size>=7){
-                        for (int i = (size - 1); i > size - 8; i--){
-                            bytelist.remove(i);
-                        }
-                        displayImages(bytelist);
-                    }*/
                 }
             }, 0);
         }
@@ -181,15 +165,56 @@ public class DataHandeler extends AppCompatActivity {
         return newBytes;
     }*/
 
+    Bitmap im;
+    BitmapFactory.Options factory = new BitmapFactory.Options();
 
+    //factory.inSampleSize = 1;
     public void displayImages(List<Byte> list){
-        //System.out.println("hej");
-        byte[] imageList = constructByteArray(list);
-        Bitmap im = BitmapFactory.decodeByteArray(imageList, 0, imageList.length);
-        final Drawable theimage = new BitmapDrawable(Resources.getSystem(), im);
-        VideoDisplay.setImages(theimage);
+        factory.inSampleSize = 1;
+        factory.inPreferQualityOverSpeed=false;
+        factory.inDither = false;
+        System.out.println("aaarrrrrrrr " + System.currentTimeMillis());
+        final byte[] imageList = constructByteArray(list);
 
-    }
+        System.out.println("start " + System.currentTimeMillis());
+
+        if(im != null) {
+            if (im.isRecycled() != true) {
+                im.recycle();
+            }
+        }
+
+        //final Drawable theimage;
+        final BooleanC theimage = new BooleanC(false);
+
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    im = BitmapFactory.decodeByteArray(imageList, 0, imageList.length, factory);
+                    System.out.println("array decoded " + System.currentTimeMillis());
+                    factory.inBitmap = im;
+                    theimage.setDrawable(new BitmapDrawable(Resources.getSystem(), im));
+                    System.out.println("drawable created " + System.currentTimeMillis());
+                    theimage.setBool(true);
+                   /* VideoDisplay.class.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }
+                    });*/
+                }
+            }).start();
+        while(true) {
+            if(theimage.getBool()) {
+                VideoDisplay.setImages(theimage.getDrawable());
+                System.out.println("end " + System.currentTimeMillis());
+                //final Drawable theimage = new BitmapDrawable(Resources.getSystem(), im);
+            break;
+            }
+        }
+        }
+
 
     public byte[] constructByteArray(List<Byte> list){
         byte[] array = new byte[list.size()];
