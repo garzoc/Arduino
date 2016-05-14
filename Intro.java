@@ -33,13 +33,8 @@ public class Intro extends AppIntro {
         setVibrate(true);
         setVibrateIntensity(30);
 
-        //This is different transition animations
-        //setDepthAnimation();
-        //setFadeAnimation();
-        //setZoomAnimation();
+        //Transition animation
         setFlowAnimation();
-        //setSlideOverAnimation();
-        //setDepthAnimation();
     }
 
     @Override
@@ -49,18 +44,13 @@ public class Intro extends AppIntro {
     }
 
     @Override
-    public void onNextPressed() {
-        // Do something when users tap on Next button.
-    }
+    public void onNextPressed() {}
 
     @Override
     public void onDonePressed() {
-        // Do something when users tap on Done button.
         finish();
     }
 
     @Override
-    public void onSlideChanged() {
-        // Do something when slide is changed
-    }
+    public void onSlideChanged() {}
 }
