@@ -3,34 +3,30 @@ package com.example.system.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.VideoView;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -46,19 +42,17 @@ import java.util.Arrays;
 public class VideoDisplay extends AppCompatActivity {
 
     boolean connected = false;
-    String ipAdress = "172.20.10.5";
+    String ipAdress = "172.20.10.14";
     int port = 6666;
     Socket socket;
     BufferedReader in = null;
     File tmpVideo;
     DatagramSocket dataSocket;
-    //static ImageView images;
     public static ImageView images;
     String testVideo = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_115k.mov";
     final Activity activity=this;
     boolean dialogShownFlag = false;
-
-
+    String raspberryVideoAdress = "http://172.20.10.14/cam_pic.php";
 
 
     @Override
@@ -67,10 +61,9 @@ public class VideoDisplay extends AppCompatActivity {
         setContentView(R.layout.activity_video);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //ImageView tempImage = (ImageView) findViewById(R.id.imageBox);
-        //images=tempImage;
-        //connect();
-        playStream();
+        //displayOwnImageStream();
+        playImages();
+        //playStream();
     }
 
     private void mySetContentView(@LayoutRes View view, RelativeLayout.LayoutParams params) {
@@ -78,11 +71,11 @@ public class VideoDisplay extends AppCompatActivity {
     }
 
     //Play a video stream
-    public void playStream() {
+ /*   public void playStream() {
         final VideoView videoView = (VideoView) findViewById(R.id.videoframe);
         final Uri video = Uri.parse(testVideo);
         videoView.setVideoURI(video);
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)videoView.getLayoutParams();
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, 0);
         videoView.setLayoutParams(layoutParams);
@@ -92,20 +85,69 @@ public class VideoDisplay extends AppCompatActivity {
                 videoView.start();
             }
         });
+    }*/
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+        protected Bitmap doInBackground(String... urls) {
+            final String urldisplay = urls[0];
+            final BooleanC mIcon11 = new BooleanC(false);
+            try {
+                Looper.prepare();
+                Handler handler = new Handler();
+                int numImages = 0;
+                final BooleanC threadbusy = new BooleanC(false);
+                java.net.URL input = new java.net.URL(urldisplay);
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferQualityOverSpeed=false;
+                options.inDither=false;
+                options.inSampleSize=1;
+
+                while(numImages<1000) {
+                    if(!threadbusy.getBool()) {
+                        numImages++;
+                        threadbusy.setBool(true);
+                        Thread.sleep(3);
+                        mIcon11.setBitmap(BitmapFactory.decodeStream(input.openStream()));
+                        VideoDisplay.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                bmImage.setImageBitmap(mIcon11.getBitmap());
+                            }
+                        });
+                        threadbusy.setBool(false);
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11.getBitmap();
+        }
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
+    public void playImages(){
+        final ImageView videoView = (ImageView) findViewById(R.id.imageVideoBox);
+        videoView.setScaleType(ImageView.ScaleType.FIT_XY);
+        final AsyncTask<String, Void, Bitmap> task = new DownloadImageTask((ImageView) findViewById(R.id.imageVideoBox))
+                    .execute(raspberryVideoAdress);
+    }
+
+    public void displayOwnImageStream(){
+        images = (ImageView) findViewById(R.id.imageVideoBox);
+        //images.setScaleType(ImageView.ScaleType.FIT_XY);
+        connect();
     }
 
     public static void setImages(Drawable drawable){
         images.setImageDrawable(drawable);
-    }
-
-    private InetAddress setInetaddres(){
-        java.net.InetAddress inetaddres = null;
-        try {
-            inetaddres = java.net.InetAddress.getByName(ipAdress);
-        }catch (IOException io){
-            System.out.println("wifi failed");
-        }
-        return inetaddres;
     }
 
     private DatagramSocket declareSocket(){
@@ -117,14 +159,6 @@ public class VideoDisplay extends AppCompatActivity {
         return dataSocket;
     }
 
-    public static boolean canWriteToStorage(){
-        String state = Environment.getExternalStorageState();
-        if(Environment.MEDIA_MOUNTED.equals(state)){
-            return  true;
-        }
-        return false;
-    }
-
     public void connect(){
         connected = true;
         new Thread(new Runnable() {
@@ -133,11 +167,9 @@ public class VideoDisplay extends AppCompatActivity {
                 Looper.prepare();
                 SocketAddress distanceAdress = new InetSocketAddress(port);
                 try {
-                    System.out.println(distanceAdress.toString());
                     DatagramSocket newDatagramSocket = declareSocket();
                     SocketAddress peerAdress = new InetSocketAddress(ipAdress, port);
                     newDatagramSocket.connect(peerAdress);
-                    System.out.println("Connect");
 
                     //Send initial  data
                     byte[] initial = new byte[DataHandeler.packetSize];
@@ -208,12 +240,23 @@ public class VideoDisplay extends AppCompatActivity {
                 /**
                  * This code inflates the buttons in the video view
                  */
-                LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(
+
+                //Video
+                /*LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
                 final View view = inflater.inflate(R.layout.button_control, null);
                 VideoView container = (VideoView) findViewById(R.id.videoframe);
                 this.addContentView(view, container.getLayoutParams());
+                Intent intent = new Intent(this, buttonControl.class);*/
+
+                //Images
+                LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+                final View view = inflater.inflate(R.layout.button_control, null);
+                ImageView container = (ImageView) findViewById(R.id.imageVideoBox);
+                this.addContentView(view, container.getLayoutParams());
                 Intent intent = new Intent(this, buttonControl.class);
+
 
                 //Button controller for video view
                 Button forward = (Button) this.findViewById(R.id.forwardButton);
@@ -320,25 +363,34 @@ public class VideoDisplay extends AppCompatActivity {
                     item.setChecked(false);
                 }
                 MainActivity.controllerMode = "joystick";
-                LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(
+                item.setChecked(true);
+
+                //Video
+                /*LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
                 final View view = inflater.inflate(R.layout.joystick_control, null);
                 VideoView container = (VideoView) findViewById(R.id.videoframe);
                 this.addContentView(view, container.getLayoutParams());
-                Intent intent = new Intent(this, buttonControl.class);
+                Intent intent = new Intent(this, buttonControl.class);*/
 
-                item.setChecked(true);
+
+                //Images
+                LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+                final View view = inflater.inflate(R.layout.joystick_control, null);
+                ImageView container = (ImageView) findViewById(R.id.imageVideoBox);
+                this.addContentView(view, container.getLayoutParams());
+                Intent intent = new Intent(this, buttonControl.class);
 
                 /**
                  * joystick controller
                  */
                 RelativeLayout layout_joystick = (RelativeLayout) findViewById(R.id.layout_joystick);
-
                 final JoyStickClass js = new JoyStickClass(getApplicationContext(), layout_joystick, R.drawable.lever);
-                js.setStickSize(100, 100);
-                js.setLayoutSize(350, 350);
-                js.setLayoutAlpha(150);
-                js.setStickAlpha(100);
+                js.setStickSize(150, 150);
+                js.setLayoutSize(750, 750);
+                js.setLayoutAlpha(100);
+                js.setStickAlpha(255);
                 js.setOffset(90);
                 js.setMinimumDistance(50);
 
@@ -411,7 +463,6 @@ public class VideoDisplay extends AppCompatActivity {
                 MainActivity.controllerMode = "start";
             }
         }
-
         if(id == R.id.connectToBluetooth){
             try {
                 BtConnection.setBluetoothData();
@@ -421,7 +472,6 @@ public class VideoDisplay extends AppCompatActivity {
                 AlertBoxes.turnOnBluetooth(activity);
             }
         }
-
         if (id == R.id.action_video) {
             item.setChecked(false);
             MainActivity.controllerMode="start";
@@ -431,8 +481,3 @@ public class VideoDisplay extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
-
-
-
-
-
