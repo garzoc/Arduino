@@ -15,7 +15,6 @@ void setup()
 {
   //initialize the car
   car.begin();
-
   //Setup usb serial connection to computer if you want output in the serial monitor
   Serial.begin(9600);
   Serial.print("Serial ready");
@@ -38,8 +37,9 @@ void setup()
 
 void loop() {
     if(Serial3.available()){
-      Serial.print("Recieved Message");
+      //Serial.println("Recieved Message");
       String serialString = Serial3.readString();
+      //Serial.println(serialString);
       switch(serialString.charAt(0)){
         case 'c':
           control(serialString);
@@ -55,8 +55,15 @@ void loop() {
 void control(String input){
   int theSpeed;
   int theAngle;
+  //Serial.println("input = " + input); 
   parseSpeed(input, &theSpeed, &theAngle);
+  //Serial.println("speed "+String(theSpeed));
+  if(theSpeed==0){
+    car.stop();
+  }
+  
   car.setSpeed(theSpeed);
+  //Serial.println("angle "+ String(theAngle));
   car.setAngle(theAngle);
 }
 
