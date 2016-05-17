@@ -11,6 +11,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+
+import java.util.Set;
 import java.util.UUID;
 import android.os.Bundle;
 import android.os.Handler;
@@ -86,7 +88,7 @@ public class radar extends PApplet {
             int distance;
             String comPortString;
 
-            // Tipos de mensajes usados por Handler
+            // Types of messages used by Handler
             public static final int WRITE_MSG = 1;
             public static final int READ_MSG = 2;
 
@@ -96,16 +98,6 @@ public class radar extends PApplet {
     //Setup Method
     public void onStart() {
         super.onStart();
-        System.out.println("!!!!!!!!!!!!!!!!!!!!! On Start !!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        //myRadar = new Radar(displayHeight, displayWidth);
-        //My test
-        // BtConnection.blueTooth();
-        //BtConnection.setBluetoothData();
-        //device = BtConnection.arduinoDevice;
-        //myRadar = new Radar(displayHeight, displayWidth);
-        //background(255, 0, 0);
-        //fill(255, 255, 0);
-        //showsData();
         adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter != null){
             if (!adapter.isEnabled()){
@@ -118,7 +110,7 @@ public class radar extends PApplet {
     }
 
     public void setup() {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!! Setup !!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //System.out.println("!!!!!!!!!!!!!!!!!!!!! Setup !!!!!!!!!!!!!!!!!!!!!!!!!!!");
         orientation(LANDSCAPE);
         myRadar = new Radar(displayHeight, displayWidth);
 
@@ -129,7 +121,7 @@ public class radar extends PApplet {
 
 
     public void starts() {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!! Starts !!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //System.out.println("!!!!!!!!!!!!!!!!!!!!! Starts !!!!!!!!!!!!!!!!!!!!!!!!!!!");
         devices = new ArrayList();
         for (BluetoothDevice device : adapter.getBondedDevices()) {
             devices.add(device);
@@ -203,7 +195,16 @@ public class radar extends PApplet {
         //println("Election checks");
         int chosenOne = (mouseY - 50) / 55;
         if(chosenOne < devices.size()){
-            device = (BluetoothDevice) devices.get(chosenOne);
+            device = (BluetoothDevice) devices.get(0);
+       /* Set<BluetoothDevice> devices = adapter.getBondedDevices();
+            if (devices.size() > 0) {
+                for (BluetoothDevice device : devices) {
+                    if (device.getName().equals("Group 13")) {
+                        this.device = device;
+                        break;
+                    }
+                }
+            }*/
             //println(device.getName());
             state = 2;
         }
@@ -214,10 +215,10 @@ public class radar extends PApplet {
         //println("connecting device");
         try {
             socket = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"));
-            System.out.println("socket " + socket);
+            //System.out.println("socket " + socket);
             socket.connect();
 
-            System.out.println(socket.getInputStream());
+            //System.out.println(socket.getInputStream());
             ReceiveBT = new getSendData(socket);
             //Looper.prepare();
 
@@ -225,14 +226,14 @@ public class radar extends PApplet {
             //thread.run();
             thread.start();
 
-            System.out.println("******************** Starts the thread ************************" + thread.getState());
+            //System.out.println("******************** Starts the thread ************************" + thread.getState());
 
 
             state = 3;
         } catch (Exception ex) {
             state = 4;
             error = ex.toString();
-            System.out.println("**************************** This is a super bad error ************************");
+            //System.out.println("**************************** This is a super bad error ************************");
             //println(error);
         }
     }
@@ -262,7 +263,7 @@ public class radar extends PApplet {
             while (true) {
                 //System.out.println("*************************** TRY *****************************");
                 try {
-                    System.out.println(in);
+                    //System.out.println(in);
                     bytes = in.read(buffer);
                     //System.out.println("***************************Buffer at position 1 " + buffer[1]);
                     mHandler.obtainMessage(READ_MSG, bytes, -1, buffer)
@@ -293,6 +294,8 @@ public class radar extends PApplet {
             super.onStop();
         }
 
+    BufferHandler bufferHandler = new BufferHandler();
+    String placeHolder = "";
         private final Handler mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -305,22 +308,90 @@ public class radar extends PApplet {
                         byte[] dataReceived = (byte[]) msg.obj;
                         // construct a string from the valid bytes in the buffer
                         srtReceived = new String(dataReceived, 0, msg.arg1);
-                        System.out.println("recevied string = " + srtReceived);
-
+                        //System.out.println("recevied string = " + srtReceived);
                         if (srtReceived != null) {
                             srtReceived = trim(srtReceived);
-                            String[] values = split(srtReceived, ',');
-                            try {
-                                angle = PApplet.parseInt(map(Integer.parseInt(values[0]), 0, 160, -80, 80));
-                                distance = PApplet.parseInt(map(Integer.parseInt(values[1]), 1, MAX_DISTANCE, 1, myRadar.radio));
-                                //println(angle + ", " + distance);
-                            } catch (Exception e) {
+                            if (srtReceived.indexOf('|') ==-1) {
+                                placeHolder = placeHolder.concat(srtReceived);
+                                //System.out.println("placeholder 1 = "+placeHolder);
+                               // System.out.println("recevied string = " + srtReceived);
+                            } else {
+                                //placeHolder = placeHolder.concat(srtReceived);
+                                //int index = placeHolder.indexOf('|');
+                                //System.out.println("index " + index);
+                                //System.out.println(placeHolder);
+
+                                placeHolder = placeHolder.concat(srtReceived);
+                                int lastIndex = placeHolder.lastIndexOf('|');
+                                String[] tmp = split(placeHolder,"|");
+                                boolean extraSegment = (lastIndex==placeHolder.length()-1)?true:false;
+                                int numStrings = tmp.length+(extraSegment?-2:-1);
+
+                                System.out.println("tmp num strings "+tmp[numStrings]);
+                                String[] values = split(tmp[numStrings], '&');
+                                placeHolder="";
+
+                               /* placeHolder = "";
+                                if(index+1<=placeHolder.length()){
+                                    int tempIndex = 0;
+                                    int numOccurance = 0;
+
+                                    while ((tempIndex=placeHolder.substring(index+1,placeHolder.length()).indexOf('|',tempIndex))!=-1) {
+                                        numOccurance++;
+                                    }
+                                    if(numOccurance==0){
+                                        placeHolder = placeHolder.substring(index+1,placeHolder.length());
+                                    }else{
+                                        String[] temp = split(placeHolder.substring(index+1,placeHolder.length()),'|');
+                                        for(int i = 0; i < numOccurance; i++){
+                                            bufferHandler.push(temp[i]);
+                                        }
+                                    }
+
+
+
+                                }else {
+                                    placeHolder = "";
+                                }*/
+                                try {
+                                    angle = PApplet.parseInt(map(Integer.parseInt(values[0]), 0, 160, -80, 80));
+                                    distance = PApplet.parseInt(map(Integer.parseInt(values[1]), 1, MAX_DISTANCE, 1, myRadar.radio));
+                                    //println(angle + ", " + distance);
+                                } catch (Exception e) {
+                                }
                             }
                         }
                         break;
                 }
             }
         };
+
+        public String process(String input){
+            if (input.indexOf('|') ==-1) {
+                placeHolder = placeHolder.concat(input);
+                //System.out.println("placeholder 1 = "+placeHolder);
+                System.out.println("recevied string = " + input);
+            }else {
+                placeHolder = placeHolder.concat(input);
+                int lastIndex = placeHolder.lastIndexOf('|');
+                String[] tmp = placeHolder.split("|");
+                boolean extraSegment = (lastIndex==placeHolder.length()-1)?false:true;
+                int numStrings = tmp.length+(extraSegment?-1:0);
+                for (int i = 0; i<numStrings; i++){
+                    bufferHandler.push(tmp[i]);
+                }
+                if(extraSegment){
+                    placeHolder = placeHolder.substring(lastIndex,placeHolder.length());
+                }else {
+                    placeHolder = "";
+                }
+
+
+
+
+            }
+            return "";
+        }
 
         public void showsData() {
             background(0, 0, 0);
@@ -368,8 +439,6 @@ public class radar extends PApplet {
             }
 
             public void dibRadar() {
-           //System.out.println("******************* dibRadar *******************");
-
                 stroke(100);
                 noFill();
                 strokeWeight(2);
