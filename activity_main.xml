@@ -1,40 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="ui.buttonrevers.MainActivity"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.tigistu.views.sliderforspeed.MainActivity">
+    <include layout="@layout/content_main" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/abc_list_focused_holo"
+        android:clickable="false"
+        android:contextClickable="false"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context=".MainActivity" >
 
-    android:background="@drawable/road"
-    android:focusable="true"
-    android:clickable="true"
-    style="@style/Theme.Base">
+        <SeekBar
+            android:id="@+id/seekBar1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_btn_switch_to_on_mtrl_00012"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="43dp"/>
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/t1"
+            android:layout_below="@+id/seekBar1"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/t2"
+            android:layout_below="@+id/seekBar1"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/seekBar1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="25dp"
+            android:text=""
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="&quot;MARS G13!&quot;"
-        android:textColor="#565e5e"
-        android:textSize="32sp"
-        android:id="@+id/textView"
-        tools:ignore="HardcodedText" />
-        androidbackground=@drawable/road"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </RelativeLayout>
 
-
-    <Button
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:id="@+id/reversebutton"
-        android:onClick="reverse"
-        android:background="@drawable/reversebt"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:longClickable="false"
-        android:clickable="true" />
-        android:gravity="bottom"
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
