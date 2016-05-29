@@ -3,8 +3,6 @@
 #include <Servo.h>
 #include <NewPing.h>
 #include <SharpIR.h>
-SR04 ultrasonicSensor;
-SR04 ultrasonicSensor2;
 
 /*###############################
  * SONIC RADAR
@@ -13,8 +11,6 @@ SR04 ultrasonicSensor2;
 #define PINTRIGGER 6//Ultrasoic trigger pin
 #define PINECO A5//Ultrasoic eco/output pin
 #define MAXDISTANCE 80//maximum viewable distance
-#define PINTRIGGER2 8//Ultrasoic trigger pin
-#define PINECO2 7
 //----- LIMIT ANGLE indicates the from and to the trace. In this case -80º..80º
 //** This should be from 15 to 165 degrees. (My change)
 #define ANGLELIMIT 90//is the mid value and alos max in min value
@@ -22,8 +18,7 @@ SR04 ultrasonicSensor2;
 #define ANGLEDELTA 1
 
 Servo myServo;//front servo
-ultrasonicSensor.attach(PINTRIGGER, PINECO);
-  ultrasonicSensor2.attach(PINTRIGGER2, PINECO2);
+NewPing ultraS(PINTRIGGER, PINECO, MAXDISTANCE);//use of library that handels the ultrsonic sensor output
 int angle = 0;//angle of the front servo
 int distance = 0;// distance read by the front detector
 int dir = 1;//current directiob in which the front servo is going
@@ -237,13 +232,11 @@ BASIC DETECTION /SAFE DRIVING
 void detectObstacle(){
   myServo.write(90);//set servo so it look straight forward
   distance = sharp.distance()/2;//set the distance detected to from the ir the the distance in centimeters
-  if(ultrasonicSensor.getDistance()<=20&&10<=ultrasonicSensor.getDistance()){//stop the car if the distance is within a certain range
+  if(distance<=20&&10<=distance){//stop the car if the distance is within a certain range
       car.stop();  
   }
-if(ultrasonicSensor2.getDistance() <= 10 && ultrasonicSensor2.getDistance() > 0){
-Serial.println(String(ultrasonicSensor2.getDistance()+ "object too close"));
-}
 
+}
 
 /*##################################
 radar  sonic
@@ -285,3 +278,5 @@ void mapping(){
       lastMilli=millis();//update time measument
   }
 }*/
+
+

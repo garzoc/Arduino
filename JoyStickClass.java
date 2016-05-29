@@ -1,7 +1,9 @@
 package com.example.system.myapplication;
 
 /**
- * Created by Tg on 4/4/2016.
+ * @author Tigistu Desta
+ * @contributers Awele Azimo, John Sundling.
+ * This class handles the basic functionality of the joystick
  */
 
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,7 +125,6 @@ public class JoyStickClass {
 
     public float getDistance() {
         if(distance > min_distance && touch_state) {
-            //System.out.println(Math.abs(distance));
             return Math.abs(distance);
         }
         return 0;
@@ -256,29 +258,35 @@ public class JoyStickClass {
         float xa = xc;
         float ya = yc - yb;
         double a = Math.sqrt(Math.pow(xa, 2) + Math.pow(ya, 2));
-        //Math.sqrt(Math.pow(xa, 2) + Math.pow(ya, 2));
         if(b != 0 && c != 0) {
             double cosA = (Math.pow(c, 2) + Math.pow(b, 2) - Math.pow(a, 2)) / (2 * b * c);
-            //System.out.println("a= " +a);
-            //System.out.println("b = " + b);
-            //System.out.println("c = " + c);
-
             return Math.toDegrees(Math.acos(cosA));
         }else{
-            //System.out.println("*******CATASTROPHIC*****");
             return  0;
         }
+    }
 
-        //System.out.println("x = " + x);
-      /*  if(x >= 0 && y >= 0)
-            return Math.toDegrees(Math.atan(y / x));
-        else if(x < 0 && y >= 0)
-            return Math.toDegrees(Math.atan(y / x)) + 180;
-        else if(x < 0 && y < 0)
-            return Math.toDegrees(Math.atan(y / x)) + 180;
-        else if(x >= 0 && y < 0)
-            return Math.toDegrees(Math.atan(y / x)) + 360;
-        return 0;*/
+    public Coord cameraDir(int rotation, Coord coord){
+        int x = 0;
+        int y = 0;
+
+        //System.out.print("Rotation = " + rotation);
+        //Log.d("print", "Rotation = " + rotation);
+        if(rotation < 45 && rotation > -45){
+            y = -1;
+        }
+        if (rotation > 45 && rotation < 135) {
+            Log.d("print", "hej");
+            x = -1;
+        }
+        if(rotation > 135 || rotation < -135 ){
+            y = 1;
+        }
+        if(rotation > -135 && rotation < -45){
+            x = 1;
+        }
+        coord.setCoord(x, y);
+        return coord;
     }
 
     public boolean turnRight(){
