@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Author Alemeseged Worku-->
+     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:gravity="center"
+    android:weightSum="1">
+
+
+    <TextView
+        android:id="@+id/textX"
+    		android:layout_width="185dp"
+     	    android:layout_height="wrap_content"
+     	    android:textSize="30sp"
+    	    android:text="X"
+        android:layout_weight="0.02" />
+
+
+
+    <TextView
+        android:id="@+id/textY"
+     	android:layout_width="185dp"
+     	    android:layout_height="wrap_content"
+     	    android:layout_marginTop="20sp"
+     	    android:textSize="30sp"
+     	    android:text="Y"
+        android:layout_weight="0.02" />
+
+
+    <TextView
+    	    android:id="@+id/textZ"
+    		android:layout_width="185dp"
+     	    android:layout_height="wrap_content"
+     	    android:layout_marginTop="20sp"
+     	    android:textSize="30sp"
+     	    android:text="Z"
+        android:layout_weight="0.16" />
+
+</LinearLayout>
